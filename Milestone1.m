@@ -15,12 +15,12 @@ c_h = c_hb*2*pi;            % 2 pi Dirac constant
 
 % creating structure InputParasL and assigning values in the structure
 % But InputParasR is just a regular scalar value
-InputParasL.E0 = 1e5;
-InputParasL.we = 0;
-InputParasL.t0 = 2e-12;
-InputParasL.wg = 5e-13;
-InputParasL.phi = 0;
-InputParasR = 0;
+InputParasL.E0 = 1e5;   % Amplitude of electric field
+InputParasL.we = 0;     % Frequency offset
+InputParasL.t0 = 2e-12; % Time offset of Gaussian wave
+InputParasL.wg = 5e-13; % Standard deviation of the wave
+InputParasL.phi = 0;    % Starting phase of the wave
+InputParasR = 0;        % No wave starting from the right
 
 n_g = 3.5;              % index of refraction
 vg = c_c/n_g*1e2;       % TWM cm/s group velocity
@@ -98,7 +98,6 @@ plot(time*1e12, real(InputR), 'b'); hold on
 plot(time*1e12, real(OutputL), 'b--');
 xlabel('time(ps)')
 ylabel('E')
-
 hold off
 
 for i = 2:Nt        % Iterate from 2 to the number of time steps
@@ -119,3 +118,56 @@ for i = 2:Nt        % Iterate from 2 to the number of time steps
     % nan values that get assigned the boundaries of forward and reverse electric fields
     OutputR(i) = Ef(Nz);
     OutputL(i) = Er(1);
+
+    % Create the plots that visualize the forward and reverse propagating
+    % electric fields
+    if mod(i,plotN) == 0            % updates every plotN iterations
+        % Real and imaginary parts of forward propagating wave
+        subplot(3,1,1)
+        plot(z*10000,real(Ef),'r'); hold on
+        plot(z*10000,imag(Ef),'r--'); hold off
+        xlim(XL*1e4)
+        ylim(YL)
+        xlabel('z(\mum)')
+        ylabel('E_f')
+        legend('\Re','\Im')
+        hold off
+        % Real and imaginary parts of the reverse propagating wave
+        subplot(3,1,2)
+        plot(z*10000,real(Er),'b'); hold on
+        plot(z*10000,imag(Er),'b--'); hold off
+        xlim(XL*1e4)
+        ylim(YL)
+        xlabel('z(\mum)')
+        ylabel('E_r')
+        legend('\Re','\Im')
+        hold off
+        % Input and Output signals over time
+        subplot(3,1,3);
+        plot(time*1e12, real(InputL), 'r'); hold on
+        plot(time*1e12, real(OutputR), 'g'); 
+        plot(time*1e12, real(InputR), 'b');
+        plot(time*1e12, real(OutputL), 'm');
+        xlim([0,Nt*dt*1e12])            % Sets total simulation time (number of time steps * length of each step)
+        ylim(YL)                        % Ensures plot is big enough for electric field amplitude
+        xlabel('time(ps)')
+        ylabel('0')
+        legend('Left Input', 'Right Output', 'Right Input', 'Left Output', 'Location', 'east')
+        hold off
+        pause(0.01)                     % Short delay in iterations of for loop (sleep())
+    end
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
