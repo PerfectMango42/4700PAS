@@ -108,7 +108,7 @@ for i = 2:Nt        % Iterate from 2 to the number of time steps
     
     % nan values that get assigned values from the SourceFct with the InputParas structures, and the current time
     InputL(i) = Ef1(t, InputParasL);
-    InputR(i) = ErN(t,0);
+    InputR(i) = ErN(t, InputParasR);
 
     Ef(1) = InputL(i) + RL*Er(1);       % Adding reflectivity coefficients
     Er(Nz) = InputR(i) + RR*Ef(Nz);     % Adding reflectivity coefficients
