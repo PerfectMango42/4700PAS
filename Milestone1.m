@@ -13,6 +13,9 @@ c_q = 1.60217653e-19;       % charge of electron
 c_hb = 1.05457266913e-34;   % Dirac constant
 c_h = c_hb*2*pi;            % 2 pi Dirac constant
 
+RL = 0.9i;                  % Left reflectivity coefficient
+RR = 0.9i;                  % Right reflectivity coefficient
+
 % creating structure InputParasL and assigning values in the structure
 % But InputParasR is just a regular scalar value
 InputParasL.E0 = 1e5;   % Amplitude of electric field
@@ -73,7 +76,7 @@ OutputL(1) = Er(1);
 % Assigning the electric field input values at the boundaries opposite to
 % the outputs
 Ef(1) = InputL(1);
-Er(Nz) = InputR(1);
+Er(Nz) = InputR(1);     
 
 % Create a figure that contains three sublots, each display different data
 % about the electric fields inputs and outputs
@@ -108,16 +111,16 @@ for i = 2:Nt        % Iterate from 2 to the number of time steps
     InputL(i) = Ef1(t, InputParasL);
     InputR(i) = ErN(t,0);
 
-    Ef(1) = InputL(i);
-    Er(Nz) = InputR(i);
+    Ef(1) = InputL(i) + RL*Er(1);       % Adding reflectivity coefficients
+    Er(Nz) = InputR(i) + RR*Ef(Nz);     % Adding reflectivity coefficients
 
     % Updates the current Ef and Er over the spatial grid, ensuring to
     % normalize 
     Ef(2:Nz) = fsync*Ef(1:Nz-1);
     Er(1:Nz-1) = fsync*Er(2:Nz);
     % nan values that get assigned the boundaries of forward and reverse electric fields
-    OutputR(i) = Ef(Nz);
-    OutputL(i) = Er(1);
+    OutputR(i) = Ef(Nz)*(1-RR);     % Adding the loss from the mirrors reflectivity
+    OutputL(i) = Er(1)*(1-RL);      % Adding the loss from the mirrors reflectivity
 
     % Create the plots that visualize the forward and reverse propagating
     % electric fields
