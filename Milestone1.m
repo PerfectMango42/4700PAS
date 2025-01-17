@@ -29,8 +29,7 @@ n_g = 3.5;              % index of refraction
 vg = c_c/n_g*1e2;       % TWM cm/s group velocity
 Lambda = 1550e-9;       % wavelength in nm 
 
-% Might be the number of plots
-plotN = 10; 
+plotN = 10;             % value to know which N you should plot the points for
 
 L = 1000e-6*1e2;        % cm
 XL = [0,L];             % X axis range in a matrix
