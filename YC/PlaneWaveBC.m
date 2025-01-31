@@ -1,7 +1,5 @@
 function [H,paras] = PlaneWaveBC(x,i,t,paras)
 % global c_eta_0
-
-
 mag = paras{1};
 phi = paras{2};
 omega = paras{3};
@@ -11,6 +9,7 @@ st = paras{6};
 s = paras{7};
 x0 = paras{8};
 stx = paras{9};
+
 if length(paras) == 10
     type = paras{10};
 else 

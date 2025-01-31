@@ -44,26 +44,22 @@ mu{1} = ones(nx{1},ny{1})*c_mu_0;   % magnetic permeability
 % defines the inclusion region
 epi{1} = ones(nx{1},ny{1})*c_eps_0;     % free space everywhere
 %epi{1}(125:150,55:95)= c_eps_0*11.3;    % region of higher permittivity
-
 % additional inclusion
 %epi{1}(50:75,20:45)= c_eps_0*35;    % region of higher permittivity
 
-% Adding a weird lightning bolt inclusion (for fun!)
-
 % Create a lightning bolt shape as a mask
-lightning_mask = zeros(nx{1}, ny{1});  % Start with a blank grid
+lightning_mask = zeros(nx{1}, ny{1});  
 
-% Define lightning bolt branches (you can adjust these as you like)
+% lightning bolt branches 
 lightning_mask(70:110, 40:60) = 1;  % First line (horizontal)
 lightning_mask(110:130, 50:70) = 1;  % Second line (diagonal)
 lightning_mask(130:150, 60:80) = 1;  % Third line (diagonal)
 
-% Add jaggedness for a more "lightning bolt" effect
-lightning_mask(90:100, 60:65) = 1;  % Branching out a bit
+% jaggedness 
 lightning_mask(120:130, 80:85) = 1;  % Another branch
 
-% Now apply the lightning bolt permittivity
-epi{1}(lightning_mask == 1) = c_eps_0 * 50;  % Set permittivity in the lightning bolt region
+% lightning bolt permittivity
+epi{1}(lightning_mask == 1) = c_eps_0 * 20;  % Set permittivity in the lightning bolt region
 
 
 % initialize for conductivity of materials
@@ -82,7 +78,7 @@ Plot.off = 0;
 Plot.pl = 0;
 Plot.ori = '13';
 Plot.N = 100;
-Plot.MaxEz = 1.1;
+Plot.MaxEz = 2;
 Plot.MaxH = Plot.MaxEz/c_eta_0;
 Plot.pv = [0 0 90];
 Plot.reglim = [0 xMax{1} 0 yMax];
@@ -94,7 +90,7 @@ bc{1}.s(1).type = 'ss';             % Type of source (sinusoidal)
 bc{1}.s(1).fct = @PlaneWaveBC;      % Source behaviour at the boundary
 
 % second source
-bc{1}.s(2).ypos = ny{1}/4 + 1;      % Position of the source in the y-direction
+bc{1}.s(2).xpos = nx{1}/4 + 1;      % Position of the source in the y-direction
 bc{1}.s(2).type = 'ss';              % Type of source (sinusoidal)
 bc{1}.s(2).fct = @PlaneWaveBC;      % Source behaviour at the boundary
 
@@ -108,35 +104,32 @@ t0 = 30e-15;
 %st = 15e-15;
 st = -0.05;     % pulse width of source wave
 s = 0;
-y0 = yMax/2;
+y0 = yMax/1.5;
 sty = 1.5*lambda;
 % call to create plane wave
 bc{1}.s(1).paras = {mag,phi,omega,betap,t0,st,s,y0,sty,'s'};
 
 % Parameters for the second source (propagating in the y-direction)
-mag_y = 1;                           % Amplitude of the wave (y-direction)
-phi_y = 0;                           % Phase of the wave (y-direction)
-omega_y = f * 2 * pi;                % Angular frequency (using the same f as before)
-betap_y = 0;                         % Wave number (can be adjusted for direction)
-t0_y = 30e-15;                       % Time offset
-st_y = 15e-15;                       % Time window
-s_y_y = 0;                           % Initial displacement in the y-direction
-sty_y = 1.5 * lambda;                % Spatial extent (related to wavelength)
+mag = 1;
+phi = 0;
+omega = f*2*pi;
+betap = 0;
+t0 = 30e-15;
+%st = 15e-15;
+st = -0.05;     % pulse width of source wave
+s = 0;
+y0 = yMax/4;
+sty = 1.5*lambda;
 % call to create plane wave
-bc{1}.s(2).paras = {mag_y, phi_y, omega_y, betap_y, t0_y, st_y, s_y_y, sty_y, 's'};
+bc{1}.s(2).paras = {mag,phi,omega,betap,t0,st,s,y0,sty,'s'};
 
 Plot.y0 = round(y0/dx);
 
 % Defining the positive/minus boundaries as absorbing boundaries
 bc{1}.xm.type = 'a';
-bc{1}.xp.type = 'a';    % electric field boundary (doesnt absorb)
+bc{1}.xp.type = 'e';    % electric field boundary (doesnt absorb)
 bc{1}.ym.type = 'a';
-bc{1}.yp.type = 'a';
-
-bc{1}.s(2).xm.type = 'a';           
-bc{1}.s(2).xp.type = 'a';            
-bc{1}.s(2).ym.type = 'a';           
-bc{1}.s(2).yp.type = 'a';            
+bc{1}.yp.type = 'e';         
 
 % Create perfectly matched layer
 pml.width = 20 * spatialFactor;
